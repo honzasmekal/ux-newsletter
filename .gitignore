@@ -1,3 +1,23 @@
-node_modules
-dist
+# deps
+/node_modules
+
+# next.js
+/.next/
+/out/
+*.tsbuildinfo
+
+# legacy agent build
+/dist
+
+# misc
+.DS_Store
+*.pem
+npm-debug.log*
+
+# env (secrets) — .env.example zůstává verzovaný
 .env
+.env*.local
+!.env.example
+
+# vercel
+.vercel

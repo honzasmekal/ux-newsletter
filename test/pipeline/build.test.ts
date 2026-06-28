@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from "vitest";
 import { runBuild, type BuildDeps } from "../../src/pipeline/build";
 import type { TrackerItem } from "../../src/domain/types";
-import type { FetchResult } from "../../src/adapters/sources";
-import type { ClassifiedItem } from "../../src/adapters/classify";
+import type { FetchResult, SourceDef } from "../../src/adapters/sources";
+import type { ClassifiedItem, RawForClassify } from "../../src/adapters/classify";
 
 const eaa: TrackerItem = {
   id: "eaa", title: "EAA", effectiveDate: "2026-09-26", status: "schváleno",
@@ -12,7 +12,7 @@ const eaa: TrackerItem = {
 function deps(over: Partial<BuildDeps> = {}): BuildDeps {
   return {
     getAllTracker: vi.fn(async () => [eaa]),
-    getActiveSources: vi.fn(async () => [
+    getActiveSources: vi.fn(async (): Promise<SourceDef[]> => [
       { name: "ČOI", url: "u", group: "A", category: "regulatorni", type: "rss" },
     ]),
     fetchAll: vi.fn(async (): Promise<FetchResult[]> => [
@@ -21,7 +21,7 @@ function deps(over: Partial<BuildDeps> = {}): BuildDeps {
           category: "regulatorni", publishedAt: "2026-06-25", summary: "EAA..." },
       ] },
     ]),
-    classify: vi.fn(async (raw): Promise<ClassifiedItem[]> => raw.map((r) => ({
+    classify: vi.fn(async (raw: RawForClassify[]): Promise<ClassifiedItem[]> => raw.map((r) => ({
       ...r, category: "regulatorni",
       signals: { actionable: true, evidence: "blog", novel: true },
     }))),
