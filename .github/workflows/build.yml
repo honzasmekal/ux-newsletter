@@ -1,0 +1,26 @@
+name: Newsletter build (neděle)
+
+on:
+  schedule:
+    # Neděle ~18:00 CEST = 16:00 UTC. Pozn.: v zimě (CET) vyjde o hodinu jinak — viz spec.
+    - cron: "0 16 * * 0"
+  workflow_dispatch: {} # manuální spuštění pro test
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+      - run: npm ci
+      - run: node --import tsx src/cli.ts build
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          NEWSLETTER_FROM: ${{ secrets.NEWSLETTER_FROM }}
+          OWNER_EMAIL: ${{ secrets.OWNER_EMAIL }}
